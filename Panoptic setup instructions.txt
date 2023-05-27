@@ -1,0 +1,41 @@
+In the server: 
+
+	module load gcc/8.4.0-cuda python/3.7.7 cuda/11.1.1
+	python3 -m venv panoptic_bev
+	source panoptic_bev/bin/activate
+	pip install --user torch==1.8.1+cu111 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+	pip install --user torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+
+Check Python, CUDA and PyTorch versions: (should be 3.7.7, 11.1, and 1.8.1+cu111 respectively)
+
+	python --version
+	nvcc --version
+	python
+		import torch
+		print(torch.__version__)
+
+Change these in the requirements.txt file:
+
+	torch==1.8.1+cu111
+	numpy~=1.19.5
+	torchvision==0.9.1+cu111
+	Pillow~=8.4.0
+
+Install the requirements and setup:
+
+	pip3 install --user -r requirements.txt
+	python setup.py develop --user
+
+If no critical errors encountered so far:
+    Install the nuScenes PanopticBEV dataset from http://panoptic-bev.cs.uni-freiburg.de/#dataset
+    Modify the train_panoptic_bev_nuscenes.sh file, so that the directory paths are correct. You can check the .sh file we sent you as an example.
+	In the script, you will see there is a master_addr and master_port. We weren't sure what to write for these, so we just randomly chose an IP and a port from the server via one of these commands:
+         netstat -tulpn | grep LISTEN
+         hostname -I
+	In Sinteract mode, move to the PanopticBEV/scripts folder
+	    bash train_panoptic_bev_nuscenes.sh
+	You should eventually see the first epoch being trained
+
+If everything works, modify the pan_bev.sh we sent you, same as before. Run it with sbatch.
+This script is essentially train_panoptic_bev_nuscenes.sh with added sbatch commands.
+

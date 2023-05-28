@@ -441,7 +441,7 @@ def train(model, optimizer, scheduler, dataloader, meters, **varargs):
         if not varargs['debug']:
             distributed.barrier()
 
-        losses = OrderedDict((k, v.mean()) for k, v in losses.items())
+        losses = OrderedDict((k, v.mean() if v is not None else torch.tensor(0, device=varargs['device'])) for k, v in losses.items())
         losses["loss"] = sum(loss_weights[loss_name] * losses[loss_name] for loss_name in losses.keys())
 
         # Increment the optimiser and back propagate the gradients
@@ -543,7 +543,7 @@ def validate(model, dataloader, **varargs):
             if not varargs['debug']:
                 distributed.barrier()
 
-            losses = OrderedDict((k, v.mean()) for k, v in losses.items())
+            losses = OrderedDict((k, v.mean() if v is not None else torch.tensor(0, device=varargs['device'])) for k, v in losses.items())
             losses["loss"] = sum(loss_weights[loss_name] * losses[loss_name] for loss_name in losses.keys())
 
             time_meters['batch_time'].update(torch.tensor(time.time() - batch_time))

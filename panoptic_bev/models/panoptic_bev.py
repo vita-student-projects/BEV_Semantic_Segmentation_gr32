@@ -176,7 +176,6 @@ class PanopticBevNet(nn.Module):
             vf_logits_list, ms_bev, vf_loss, v_region_loss, f_region_loss = None, None, None, None, None
 
         # RPN Part
-        """
         if do_loss:
             obj_loss, bbx_loss, proposals = self.rpn_algo.training(self.rpn_head, ms_bev, bbx, iscrowd, valid_size,
                                                                    training=self.training, do_inference=True)
@@ -185,10 +184,8 @@ class PanopticBevNet(nn.Module):
             obj_loss, bbx_loss = None, None
         else:
             obj_loss, bbx_loss, proposals = None, None, None
-        """
-        obj_loss, bbx_loss, proposals = None, None, None
+
         # ROI Part
-        """
         if do_loss:
             roi_cls_loss, roi_bbx_loss, roi_msk_loss, roi_cls_logits, roi_bbx_logits, roi_msk_logits = \
                 self.inst_algo.training(self.roi_head, ms_bev, proposals, bbx, cat, iscrowd, ids, bev_msk, img_size)
@@ -197,13 +194,11 @@ class PanopticBevNet(nn.Module):
             roi_cls_logits, roi_bbx_logits, roi_msk_logits = None, None, None
         if do_prediction:
             bbx_pred, cls_pred, obj_pred, msk_pred, roi_msk_logits = self.inst_algo.inference(self.roi_head, ms_bev,
-                                                                                              proposals, valid_size, img_size)
+                                                                                              proposals, valid_size,
+                                                                                              img_size)
         else:
             bbx_pred, cls_pred, obj_pred, msk_pred = None, None, None, None
-        """
-        roi_cls_loss, roi_bbx_loss, roi_msk_loss = None, None, None
-        roi_cls_logits, roi_bbx_logits, roi_msk_logits = None, None, None
-        bbx_pred, cls_pred, obj_pred, msk_pred = None, None, None, None
+
         # Segmentation Part
         if do_loss:
             sem_loss, sem_conf_mat, sem_pred, sem_logits, sem_feat = self.sem_algo.training(self.sem_head, ms_bev,
@@ -217,7 +212,6 @@ class PanopticBevNet(nn.Module):
             sem_loss, sem_reg_loss, sem_conf_mat, sem_pred, sem_logits, sem_feat = None, None, None, None, None, None
 
         # Panoptic Fusion. Fuse the semantic and instance predictions to generate a coherent output
-        """
         if do_prediction:
             # The first channel of po_pred contains the semantic labels
             # The second channel contains the instance masks with the instance label being the corresponding semantic label
@@ -228,8 +222,7 @@ class PanopticBevNet(nn.Module):
             po_pred, po_logits = None, None
         else:
             po_pred, po_loss, po_logits = None, None, None
-        """
-        po_pred, po_loss, po_logits = None, None, None
+
         # Prepare outputs
         # LOSSES
         loss['obj_loss'] = obj_loss
@@ -254,6 +247,7 @@ class PanopticBevNet(nn.Module):
         result['v_region_logits'] = v_region_logits_list
         result['f_region_logits'] = f_region_logits_list
         result['sem_gt'] = sem_gt
+        result['po_gt_vis'] = po_gt_vis
         if po_pred is not None:
             result['po_pred'] = po_pred[0]
             result['po_class'] = po_pred[1]

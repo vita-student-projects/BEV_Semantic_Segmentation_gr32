@@ -14,6 +14,7 @@ from panoptic_bev.config import load_config
 from panoptic_bev.data.dataset import BEVKitti360Dataset, BEVTransform, BEVNuScenesDataset
 from panoptic_bev.data.misc import iss_collate_fn
 from panoptic_bev.data.sampler import DistributedARBatchSampler
+from panoptic_bev.models.backbone_edet.resnet import ResNetBackbone
 
 from panoptic_bev.modules.ms_transformer import MultiScaleTransformerVF
 from panoptic_bev.modules.heads import FPNSemanticHeadDPC as FPNSemanticHeadDPC, FPNMaskHead, RPNHead

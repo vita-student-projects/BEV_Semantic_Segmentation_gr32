@@ -42,7 +42,7 @@ The nuScenes dataset is specifically designed for a range of deep learning tasks
 
 The ground truth data used in our study was created by the authors of PanopticBEV. You can find this dataset from   [here](http://panoptic-bev.cs.uni-freiburg.de/).
 
-The nuScenes dataset can be found on the shared dataset in SCITAS at location:
+The nuScenes dataset can be found on the shared dataset in SCITAS at location:  
     /work/scitas-share/datasets/Vita/civil-459/NuScenes_full/US
 
 ## 4. Setup

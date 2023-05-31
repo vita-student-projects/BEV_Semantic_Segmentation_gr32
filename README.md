@@ -74,6 +74,9 @@ In the "scripts" folder, model training is done in "train_panoptic_bev.py" and e
 
 Run training and evaluation scripts. Config can be found in "experiments/config/nuscenes.ini". Logs will be written in "experiments/run_name/logs".
 
+### Pre-trained models
+You can access the weights [here.](https://drive.google.com/drive/folders/1xoWRH4V4Y2Zmw80EB948CmT-rZsE9sIh?usp=sharing)
+
 ## 5. Results
 Evaluation of the experiments, in IoU [%]: 
 | Model|  Instance Seg. |Epochs | Road  | Side. | Manm. | Veg. | Ter. | Occ. | Per. | 2-Wh. | Car  | Truck | mIoU  |

@@ -1,97 +1,51 @@
-# Bird's-Eye-View Panoptic Segmentation Using Monocular Frontal View Images
+# DLAV Project: BEV Semantic Segmentation
 
-This repository contains the PyTorch implementation of the PanopticBEV model proposed in our RA-L 2021 paper [Bird's-Eye-View Panoptic Segmentation Using Monocular Frontal View Images](https://arxiv.org/abs/2108.03227).
+### Group 32: Furkan Güzelant & Kardelen Ceren 
+In this project, we worked on solving BEV Semantic Segmentation task using [PanopticBEV](https://github.com/robot-learning-freiburg/PanopticBEV) as our baseline model. 
 
-Our approach, PanopticBEV, is the state-of-the-art approach for generating panoptic segmentation maps in the bird's eye view using only monocular frontal view images.
+## 1. Contribution Overview
 
-![PanopticBEV Teaser](images/teaser.png)
+### 1.1 Discarding Instance Segmentation 
+![](https://hackmd.io/_uploads/rkRpUbEIn.png)
 
-If you find this code useful for your research, please consider citing our paper:
-```
-@article{gosala21bev,
-  author={Gosala, Nikhil and Valada, Abhinav},
-  journal={IEEE Robotics and Automation Letters}, 
-  title={Bird’s-Eye-View Panoptic Segmentation Using Monocular Frontal View Images}, 
-  year={2022},
-  volume={7},
-  number={2},
-  pages={1968-1975},
-  doi={10.1109/LRA.2022.3142418}}
-```
+Based on the findings of the BEVformer model, which shows improved prediction accuracy by simultaneously performing 3D object detection and semantic segmentation, it is plausible that panoptic segmentation might exhibit similar behavior. As part of our research, we aim to compare these segmentation tasks and assess whether incorporating instance segmentation enhances the model's predictions.
+### 1.2 Using a different backbone (ResNet)
+[PanopticBEV](https://github.com/robot-learning-freiburg/PanopticBEV) uses EfficientDet-D3 model for its network backbone. As ResNet is widely employed as a feature extractor, another contribution we made is to utilize various ResNet variants as the network backbone. Specifically, we experimented with ResNet152 to assess the impact of different backbones on feature extraction within the network.
+## 2. Experiments
 
-## Relevant links
-- [Paper (IEEE)](https://ieeexplore.ieee.org/document/9681287)
-- [Paper (arXiv)](https://arxiv.org/abs/2108.03227)
-- [Video](https://www.youtube.com/watch?v=HCJ1Hi_y9x8)
-- [Project Webpage](http://panoptic-bev.cs.uni-freiburg.de/)
+### 2.1 Setup
 
-## System requirements
-- Linux (Tested on Ubuntu 18.04)
-- Python3 (Tested using Python 3.6.9)
-- PyTorch (Tested using PyTorch 1.8.1)
-- CUDA (Tested using CUDA 11.1)
+We conducted our experiments on nuScenes dataset and ground truth data genereated by authors of PanopticBEV.
+### 2.2 Comparing models
 
-## Installation
-a. Create a python virtual environment and activate it.
-```shell
-python3 -m venv panoptic_bev
-source panoptic_bev/bin/activate
-```
-b. Update `pip` to the latest version.
-```shell
-python3 -m pip install --upgrade pip
-```
-c. Install the required python dependencies using the provided `requirements.txt` file.
-```shell
-pip3 install -r requirements.txt
-```
-d. Install the PanopticBEV code.
-```shell
-python3 setup.py develop
-```
-## PanopticBEV datasets
-### KITTI-360
-- Download the Kitti-360 dataset from [here](http://www.cvlibs.net/datasets/kitti-360/).
-- Download the Kitti-360 PanopticBEV dataset from [here](http://panoptic-bev.cs.uni-freiburg.de/#dataset).
-- In the training and evaluation scripts:
-  - Modify the `dataset_root_dir` parameter to point to the location of the original Kitti-360 dataset.
-  - Modify the `seam_root_dir` parameter to point to the location of the Kitti-360 PanopticBEV dataset.
+To conduct a comparative analysis, we trained two distinct models: one with the instance segmentation head and the other without it. Instead of the default 30 epochs, we trained the models for 6 epochs. In order to assess and compare the models, we employed semantic loss and semantic mIoU (mean Intersection over Union) as evaluation metrics.
+ 
+### 2.3 Experimenting with backbones
 
-### nuScenes
-- Download the nuScenes dataset from [here](https://nuscenes.org/nuscenes).
-- Download the nuScenes PanopticBEV dataset from [here](http://panoptic-bev.cs.uni-freiburg.de/#dataset).
-- In the training and evaluation scripts:
-  - Modify the `dataset_root_dir` parameter to point to the location of the original nuScenes dataset.
-  - Modify the `seam_root_dir` parameter to point to the location of the nuScenes PanopticBEV dataset.
+We conducted an experiments on two different backbones, namely EfficientDet-D3 and ResNet152 to see their performance on the network. Similarly, we run each model for 6 epochs. We assessed their performance using semantic loss and semantic mIou.
+
+### 2.4 Evaluation metric
+
+We used semantic mIoU (mean Intersection over Union) to evaluate the performance of the models. 
+
+![](https://hackmd.io/_uploads/HkvQnfNU3.png)
+where Sp is the prediction and Sg is the ground truth
 
 
-## Code execution
+## 3. Dataset
 
-### Configuration parameters
-The configuration parameters of the model such as the learning rate, batch size, and dataloader options are stored in the `experiments/config` folder.
-If you intend to modify the model parameters, please do so here.
+### 3.1 Description of the dataset
 
-### Training and evaluation
-The training and evaluation python codes along with the shell scripts to execute them are provided in the `scripts` folder. 
-Before running the shell scripts, please fill in the missing parameters with your computer-specific data paths and parameters.
+The nuScenes dataset is specifically designed for a range of deep learning tasks related to autonomous driving. It comprises images and video sequences captured by six cameras positioned around the ego vehicle, in addition to radar and LIDAR inputs. The dataset consists of 1000 scenes, each lasting 20 seconds, resulting in approximately 1.4 million annotated images. The annotations are primarily focused on semantic segmentation and are generated using LIDAR data. The dataset encompasses 23 distinct classes, including pedestrians, various types of vehicles like trucks and bicycles, emergency vehicles, and different terrain types.
 
-To train the model, execute the following command after replacing `*` with either `kitti` or `nuscenes`.
-```shell
-bash train_panoptic_bev_*.sh
-```
+### 3.2 Label format & Dataset preparation
 
-To evaluate the model, execute the following command after replacing `*` with either `kitti` or `nuscenes`.
-```shell
-bash eval_panoptic_bev_*.sh 
-```
+The ground truth data used in our study was created by the authors of PanopticBEV. You can find this dataset from   [here](http://panoptic-bev.cs.uni-freiburg.de/).
 
-## Acknowledgements
-This work was supported by the Federal Ministry of Education and Research (BMBF) of Germany under ISA 4.0 and by the Eva Mayr-Stihl Stiftung.
+The nuScenes dataset can be found on the shared dataset in SCITAS at location:/work/scitas-share/datasets/Vita/civil-459/NuScenes_full/US
 
-This project contains code adapted from other open-source projects. We especially thank the authors of:
-- [Mapillary Seamseg](https://github.com/mapillary/seamseg)
-- [Yet-Another-EfficientDet-Pytorch](https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch)
+## 4. Setup
 
-## License
-This code is released under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) for academic usage.
-For commercial usage, please contact [Nikhil Gosala](https://rl.uni-freiburg.de/people/gosala).
+## 5. Results
+
+## 6. Conclusion

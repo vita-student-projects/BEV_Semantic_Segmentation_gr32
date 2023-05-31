@@ -1,7 +1,7 @@
 # DLAV Project: BEV Semantic Segmentation
 
 ### Group 32: Furkan Güzelant & Kardelen Ceren 
-In this project, we worked on solving BEV Semantic Segmentation task using [PanopticBEV](https://github.com/robot-learning-freiburg/PanopticBEV) as our baseline model. 
+In this project, we worked on solving BEV Semantic Segmentation task using [PanopticBEV](https://arxiv.org/abs/2108.03227) as our baseline model. Repository forked from [here](https://github.com/robot-learning-freiburg/PanopticBEV).
 
 ## 1. Contribution Overview
 
@@ -78,21 +78,26 @@ Run training and evaluation scripts. Config can be found in "experiments/config/
 You can access the weights [here.](https://drive.google.com/drive/folders/1xoWRH4V4Y2Zmw80EB948CmT-rZsE9sIh?usp=sharing)
 
 ## 5. Results
-Evaluation of the experiments, in IoU [%]: 
+Semantic segmentation results by class, in IoU [%], sorted by mIoU: 
 | Model|  Instance Seg. |Epochs | Road  | Side. | Manm. | Veg. | Ter. | Occ. | Per. | 2-Wh. | Car  | Truck | mIoU  |
 | ------------ | ------ | --- | ----- | -------- | ------- | ---------- | ------- | --------- | ------ | --------- | ----- | ----- | ----- |
-| PanopticBEV† |   No   | 30 | 77.32 | 28.55    | 36.72   | 35.06      | 33.56   | 36.65     | 4.98   | 9.63      | 40.53 | 33.47 | 33.65 |
-| PanopticBEV |   No   | 10 | 76.49 | 28.05 | 36.25  | 34.44    | 34.24  | 34.23 | 4.85 | 7.50 | 38.83| 30.04 | 32.49 |
+| PanopticBEV  | Yes |  6 | 65.84 | 19.84    | 31.54  | 28.77 | 27.01| 28.81 | 2.89| 3.58 | 28.60 | 25.41 | 26.23   |
 | PanopticBEV |   No   | 6 | 67.47 | 18.60    | 29.76   | 30.75 | 27.13| 30.51 | 3.60  | 5.20 | 29.85 | 25.70 | 26.85 |
-| PanopticBEV  | Yes |  6 | 65.84 | 19.84    | 31.54  | 28.77 | 27.01| 28.81 | 2.89| 3.58 | 28.60 | 25.41 | 26.23 |
-| PanopticBEV  with Resnet| Yes |  6 | 38.39 | 2.25    | 14.43  | 13.76 | 2.82| 0.00 | 0.15 | 0.00 | 2.30 | 9.98 | 11.03 |
+| PanopticBEV  with Resnet| Yes |  6 | 73.25 | 25.01    | 36.25  | 34.90 | 33.10 | 33.55 | 2.66 | 5.37 | 35.67 | 25.48 | 30.52 |
+| PanopticBEV |   No   | 10 | 76.49 | 28.05 | 36.25  | 34.44    | 34.24  | 34.23 | 4.85 | 7.50 | 38.83| 30.04 | 32.49 |
+| PanopticBEV† |   No   | 30 | 77.32 | 28.55    | 36.72   | 35.06      | 33.56   | 36.65     | 4.98   | 9.63      | 40.53 | 33.47 | 33.65 |
 
 
 †: as reported in the [PanopticBEV paper](https://arxiv.org/pdf/2108.03227.pdf).
 
-It can be seen that with 10 epochs, we attained comparable results to those reported in the paper. However, due to time constraints, we performed our experiments with 6 epochs. 
+It can be seen that training the original model with 10 epochs, we attained comparable results to those reported in the paper. However, due to time constraints, we performed our experiments with 6 epochs, and chose our baseline as the original model with 6 epochs. 
 
-We observe that training the model with instance segmentation head reduces the semantic segmentation performance.
+We observe that training the model with instance segmentation head reduces the semantic segmentation performance. However, using the adapted ResNet as the model's backbone decidedly increases model performance. 
+
+
+![](https://hackmd.io/_uploads/ByxxTmrI3.png)
+
+As can be seen in the above graph, in all the experiments, the loss continues to decrease. We expect that if we were to run the same experiments with 30 epochs as the paper suggested, we would get similar or better results. 
 
 An example BEV semantic segmentation output from our no instance segmentation, 6 epochs experiment: 
 ![](https://hackmd.io/_uploads/SkkI0eBUn.png)
@@ -100,4 +105,4 @@ You can see that even with the occlusion (rain drops), the model was able to ide
 
 ## 6. Conclusion
 
-In this project, we modify the PanopticBEV model to understand the effects of training both semantic segmentation and instance segmentation tasks at the same time and the backbone choice. We conclude that training with both task heads slightly decreases the semantic segmentation performance and that ResNet significantly decreases the performance. 
+In this project, we modify the PanopticBEV model to understand the effects of training both semantic segmentation and instance segmentation tasks at the same time and the backbone choice. We conclude that training with both task heads slightly decreases the semantic segmentation performance and that ResNet as a backbone increases the performance. 

@@ -12,7 +12,7 @@ THING_COLOURS = [(56, 60, 200), (168, 240, 104), (24, 20, 140), (41, 102, 116),
                  (101, 224, 99), (51, 39, 96), (5, 72, 78), (4, 236, 154)]
 
 
-def visualise_bev(img, bev_gt, bev_pred, **varargs):
+def visualise_bev(img,bev_gt, bev_pred, **varargs):
     vis_list = []
 
     img_unpack, _ = pad_packed_images(img)
@@ -145,7 +145,7 @@ def save_panoptic_output(sample, sample_category, save_tuple, **varargs):
         os.makedirs(save_dir)
 
     img_name_rgb = os.path.join(save_dir_rgb, "{}.png".format(sample_name))
-    img_name = os.path.join(save_dir, "{}.png".format(sample_name))
+    img_name_gt = os.path.join(save_dir, "{}_gt.png".format(sample_name))
 
     # Generate the numpy image and save the image using OpenCV
     # Check if there are multiple elements in the sample. Then you'll have to decode it using generatePOMask function
@@ -154,11 +154,23 @@ def save_panoptic_output(sample, sample_category, save_tuple, **varargs):
     else:
         po_mask = sample[0].unsqueeze(0)
 
-    # Save the raw version of the mask
-    po_mask_orig = po_mask.permute(1, 2, 0).cpu().numpy().astype(np.uint16)
-    cv2.imwrite(img_name, po_mask_orig)
+    img_unpack, _ = pad_packed_images(varargs["orig_img"])
+    i = 0
+    for img in img_unpack:
+        img_name = os.path.join(save_dir, "{}---{}.png".format(sample_name, i))
+        i = i + 1
+        po_mask_orig = (recover_image(img, varargs["rgb_mean"], varargs["rgb_std"]) * 255).type(torch.IntTensor)
+        po_mask_orig = po_mask_orig.numpy().transpose(1, 2, 0)
+        cv2.imwrite(img_name, po_mask_orig)
 
     # Get the RGB image of the po_pred
     po_mask_rgb = visualise_panoptic_mask_trainid(po_mask, varargs['dataset'])
     po_mask_rgb = po_mask_rgb.permute(1, 2, 0).cpu().numpy()
     cv2.imwrite(img_name_rgb, po_mask_rgb)
+    '''
+    bev_gt_unpack = get_panoptic_mask(varargs["sem_gt"], varargs['num_stuff']).unsqueeze(0)
+    vis_bev_gt = visualise_panoptic_mask_trainid(bev_gt_unpack, varargs['dataset'])
+    vis_bev_gt = vis_bev_gt.permute(1, 2, 0).cpu().numpy()
+    cv2.imwrite(img_name_gt, vis_bev_gt)
+    '''
+

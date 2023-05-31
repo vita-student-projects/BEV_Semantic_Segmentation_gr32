@@ -253,6 +253,7 @@ class PanopticBevNet(nn.Module):
         result['vf_logits'] = vf_logits_list
         result['v_region_logits'] = v_region_logits_list
         result['f_region_logits'] = f_region_logits_list
+        result['sem_gt'] = sem_gt
         if po_pred is not None:
             result['po_pred'] = po_pred[0]
             result['po_class'] = po_pred[1]

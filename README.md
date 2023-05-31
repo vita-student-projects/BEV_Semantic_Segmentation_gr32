@@ -28,7 +28,7 @@ We conducted an experiments on two different backbones, namely EfficientDet-D3 a
 
 We used semantic mIoU (mean Intersection over Union) to evaluate the performance of the models. 
 
-![](https://hackmd.io/_uploads/HkvQnfNU3.png)
+![](https://hackmd.io/_uploads/HkvQnfNU3.png)  
 where Sp is the prediction and Sg is the ground truth
 
 

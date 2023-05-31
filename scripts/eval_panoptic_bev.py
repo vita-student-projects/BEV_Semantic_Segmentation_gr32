@@ -184,12 +184,13 @@ def make_model(args, config, num_thing, num_stuff):
 
     # Create the backbone
     model_compount_coeff = int(base_config["base"][-1])
-    model_name = "efficientdet-d{}".format(model_compount_coeff)
+    model_compount_coeff = 152
+    model_name = "resnet{}".format(model_compount_coeff)
     log_info("Creating backbone model %s", base_config["base"], debug=args.debug)
-    body = EfficientDet(compound_coef=model_compount_coeff)
-    ignore_layers = ['bifpn.0.p5_to_p6', 'bifpn.0.p6_to_p7', 'bifpn.0.p3_down_channel', "bifpn.0.p4_down_channel",
-                     "bifpn.0.p5_down_channel", "bifpn.0.p6_down_channel"]
-    body = EfficientDet.from_pretrained(body, model_name, ignore_layers=ignore_layers)
+    body = ResNetBackbone()
+    # ignore_layers = ['bifpn.0.p5_to_p6', 'bifpn.0.p6_to_p7', 'bifpn.0.p3_down_channel', "bifpn.0.p4_down_channel",
+    #                "bifpn.0.p5_down_channel", "bifpn.0.p6_down_channel"]
+    # body = EfficientDet.from_pretrained(body, model_name, ignore_layers=ignore_layers)
 
     # The transformer operates only on a single scale
     extrinsics = cam_config.getstruct('extrinsics')

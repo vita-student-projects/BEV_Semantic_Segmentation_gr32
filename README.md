@@ -94,8 +94,7 @@ It can be seen that training the original model with 10 epochs, we attained comp
 
 We observe that training the model with instance segmentation head reduces the semantic segmentation performance. However, using the adapted ResNet as the model's backbone decidedly increases model performance. 
 
-
-![](https://hackmd.io/_uploads/ByxxTmrI3.png)
+![](https://hackmd.io/_uploads/S1YP44rI2.png)
 
 As can be seen in the above graph, in all the experiments, the loss continues to decrease. We expect that if we were to run the same experiments with 30 epochs as the paper suggested, we would get similar or better results. 
 

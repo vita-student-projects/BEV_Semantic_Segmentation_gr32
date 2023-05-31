@@ -6,9 +6,10 @@ In this project, we worked on solving BEV Semantic Segmentation task using [Pano
 ## 1. Contribution Overview
 
 ### 1.1 Discarding Instance Segmentation 
-![](https://hackmd.io/_uploads/rkRpUbEIn.png)
+![](https://hackmd.io/_uploads/ByUgECEIh.png)
 
-Based on the findings of the BEVformer model, which shows improved prediction accuracy by simultaneously performing 3D object detection and semantic segmentation, it is plausible that panoptic segmentation might exhibit similar behavior. As part of our research, we aim to compare these segmentation tasks and assess whether incorporating instance segmentation enhances the model's predictions.
+Based on the findings of the BEVformer model, which shows improved prediction accuracy by simultaneously performing 3D object detection and semantic segmentation, it is plausible that panoptic segmentation might exhibit similar behavior. Since PanopticBEV has not reported ablation studies done on this subject, as part of our research, we aim to compare these segmentation tasks and assess whether incorporating instance segmentation enhances the model's predictions.
+
 ### 1.2 Using a different backbone (ResNet)
 [PanopticBEV](https://github.com/robot-learning-freiburg/PanopticBEV) uses EfficientDet-D3 model for its network backbone. As ResNet is widely employed as a feature extractor, another contribution we made is to utilize various ResNet variants as the network backbone. Specifically, we experimented with ResNet152 to assess the impact of different backbones on feature extraction within the network.
 ## 2. Experiments
@@ -42,11 +43,58 @@ The nuScenes dataset is specifically designed for a range of deep learning tasks
 
 The ground truth data used in our study was created by the authors of PanopticBEV. You can find this dataset from   [here](http://panoptic-bev.cs.uni-freiburg.de/).
 
-The nuScenes dataset can be found on the shared dataset in SCITAS at location:  
-    /work/scitas-share/datasets/Vita/civil-459/NuScenes_full/US
+The nuScenes dataset can be found on the shared dataset in SCITAS at location:  /work/scitas-share/datasets/Vita/civil-459/NuScenes_full/US
 
 ## 4. Setup
 
+To run this model in SCITAS, go through the following steps, while connected to an interactive session.
+
+Setup the environment and the model:
+
+```
+module load gcc/8.4.0-cuda python/3.7.7 cuda/11.1.1
+python3 -m venv panoptic_bev
+source panoptic_bev/bin/activate
+
+pip install --user torch==1.8.1+cu111 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+pip install --user torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+pip3 install --user -r requirements.txt
+
+python setup.py develop --user
+```
+Download the PanopticBEV dataset mentioned above from [here](http://panoptic-bev.cs.uni-freiburg.de/).
+
+### Training and Evaluation
+In the "scripts" folder, model training is done in "train_panoptic_bev.py" and evaluation is done in "eval_panoptic_bev.py", which are called by scripts "train_panoptic_bev_nuscenes.sh" and "eval_panoptic_bev_nuscenes.sh", respectively. Modify these last two files so that: 
+
+* project_root_dir: the root of PanopticBEV in the server
+* seam_root_dir: location of the downloaded PanopticBEV dataset
+* run_name: a folder with this name is created each time the script is run, so must be changed from run to run
+* resume (only in eval): location of the saved model to evaluate. Can be found in "experiments/run_name/saved_models/model_best.pth"
+
+Run training and evaluation scripts. Config can be found in "experiments/config/nuscenes.ini". Logs will be written in "experiments/run_name/logs".
+
 ## 5. Results
+Evaluation of the experiments, in IoU [%]: 
+| Model|  Instance Seg. |Epochs | Road  | Side. | Manm. | Veg. | Ter. | Occ. | Per. | 2-Wh. | Car  | Truck | mIoU  |
+| ------------ | ------ | --- | ----- | -------- | ------- | ---------- | ------- | --------- | ------ | --------- | ----- | ----- | ----- |
+| PanopticBEV† |   No   | 30 | 77.32 | 28.55    | 36.72   | 35.06      | 33.56   | 36.65     | 4.98   | 9.63      | 40.53 | 33.47 | 33.65 |
+| PanopticBEV |   No   | 10 | 76.49 | 28.05 | 36.25  | 34.44    | 34.24  | 34.23 | 4.85 | 7.50 | 38.83| 30.04 | 32.49 |
+| PanopticBEV |   No   | 6 | 67.47 | 18.60    | 29.76   | 30.75 | 27.13| 30.51 | 3.60  | 5.20 | 29.85 | 25.70 | 26.85 |
+| PanopticBEV  | Yes |  6 | 65.84 | 19.84    | 31.54  | 28.77 | 27.01| 28.81 | 2.89| 3.58 | 28.60 | 25.41 | 26.23 |
+| PanopticBEV  with Resnet| Yes |  6 | 38.39 | 2.25    | 14.43  | 13.76 | 2.82| 0.00 | 0.15 | 0.00 | 2.30 | 9.98 | 11.03 |
+
+
+†: as reported in the [PanopticBEV paper](https://arxiv.org/pdf/2108.03227.pdf).
+
+It can be seen that with 10 epochs, we attained comparable results to those reported in the paper. However, due to time constraints, we performed our experiments with 6 epochs. 
+
+We observe that training the model with instance segmentation head reduces the semantic segmentation performance.
+
+An example BEV semantic segmentation output from our no instance segmentation, 6 epochs experiment: 
+![](https://hackmd.io/_uploads/SkkI0eBUn.png)
+You can see that even with the occlusion (rain drops), the model was able to identify the road, and the cars ahead. 
 
 ## 6. Conclusion
+
+In this project, we modify the PanopticBEV model to understand the effects of training both semantic segmentation and instance segmentation tasks at the same time and the backbone choice. We conclude that training with both task heads slightly decreases the semantic segmentation performance and that ResNet significantly decreases the performance. 
